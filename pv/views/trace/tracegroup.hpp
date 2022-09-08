@@ -24,6 +24,8 @@
 #include "tracetreeitemowner.hpp"
 
 using std::pair;
+using std::map;
+using std::shared_ptr;
 
 namespace pv {
 namespace views {
@@ -117,6 +119,9 @@ public:
 	unsigned int depth() const;
 
 	void ungroup();
+
+	virtual void save_trace_tree(QSettings &settings) const;
+	virtual void restore_trace_tree(QSettings &settings, map< QString, shared_ptr<TraceTreeItem> > &items);
 
 public:
 	void row_item_appearance_changed(bool label, bool content);

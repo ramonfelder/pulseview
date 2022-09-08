@@ -23,11 +23,14 @@
 #include <memory>
 
 #include <QPropertyAnimation>
+#include <QSettings>
 
 #include "viewitem.hpp"
 
 using std::enable_shared_from_this;
 using std::pair;
+using std::map;
+using std::shared_ptr;
 
 namespace pv {
 namespace views {
@@ -118,6 +121,9 @@ public:
 	 * @return A pair containing the minimum and maximum y-values.
 	 */
 	virtual pair<int, int> v_extents() const = 0;
+
+	virtual void save_trace_tree(QSettings &settings) const;
+	virtual void restore_trace_tree(QSettings &settings, map< QString, shared_ptr<TraceTreeItem> > &items);
 
 protected:
 	TraceTreeItemOwner *owner_;

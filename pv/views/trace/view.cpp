@@ -514,6 +514,10 @@ void View::save_settings(QSettings &settings) const
 		signal->save_settings(settings);
 		settings.endGroup();
 	}
+
+	settings.beginGroup("trace_tree");
+	save_trace_tree(settings);
+	settings.endGroup();
 }
 
 void View::restore_settings(QSettings &settings)
@@ -555,6 +559,22 @@ void View::restore_settings(QSettings &settings)
 
 	// Update the ruler so that it uses the new scale
 	calculate_tick_spacing();
+
+	// Restore trace tree
+	if (settings.childGroups().contains("trace_tree")) {
+		settings.beginGroup("trace_tree");
+		if (settings.contains("items")) {
+			map< QString, shared_ptr<TraceTreeItem> > traces;
+			for (auto i : trace_tree_leaf_items()) {
+				auto t = dynamic_pointer_cast<Trace>(i);
+				if (t)
+					traces[t->base()->internal_name()] = t;
+			}
+			clear_child_items();
+			restore_trace_tree(settings, traces);
+		}
+		settings.endGroup();
+	}
 }
 
 vector< shared_ptr<TimeItem> > View::time_items() const

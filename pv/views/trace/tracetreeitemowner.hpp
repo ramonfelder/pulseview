@@ -24,6 +24,7 @@
 #include "tracetreeitem.hpp"
 
 using std::pair;
+using std::map;
 using std::shared_ptr;
 using std::vector;
 
@@ -76,6 +77,10 @@ public:
 	 * Returns a list of row items owned by this object.
 	 */
 	vector< shared_ptr<TraceTreeItem> > trace_tree_child_items() const;
+	/**
+	 * Returns a list of leaf items owned by this objects and its descendants
+	 */
+	vector< shared_ptr<TraceTreeItem> > trace_tree_leaf_items() const;
 
 	/**
 	 * Clears the list of child items.
@@ -99,6 +104,9 @@ public:
 	 * @return A pair containing the minimum and maximum y-values.
 	 */
 	pair<int, int> v_extents() const;
+
+	virtual void save_trace_tree(QSettings &settings) const;
+	virtual void restore_trace_tree(QSettings &settings, map< QString, shared_ptr<TraceTreeItem> > &items);
 
 public:
 	virtual void row_item_appearance_changed(bool label, bool content) = 0;

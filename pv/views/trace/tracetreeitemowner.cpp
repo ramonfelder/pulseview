@@ -22,6 +22,7 @@
 #include "tracetreeitem.hpp"
 #include "trace.hpp"
 #include "tracetreeitemowner.hpp"
+#include "tracegroup.hpp"
 
 using std::find;
 using std::make_pair;
@@ -30,6 +31,7 @@ using std::min;
 using std::pair;
 using std::shared_ptr;
 using std::static_pointer_cast;
+using std::make_shared;
 using std::vector;
 
 namespace pv {
@@ -53,6 +55,21 @@ TraceTreeItemOwner::trace_tree_child_items() const
 	}
 
 	return items;
+}
+
+vector< shared_ptr<TraceTreeItem> > TraceTreeItemOwner::trace_tree_leaf_items() const
+{
+	vector< shared_ptr<TraceTreeItem> > leaves;
+	for (auto &i : trace_tree_child_items()) {
+		auto branch = dynamic_pointer_cast<TraceTreeItemOwner>(i);
+		if (branch) {
+			auto branch_leaves = branch->trace_tree_leaf_items();
+			leaves.insert(leaves.end(), branch_leaves.begin(), branch_leaves.end());
+		} else {
+			leaves.push_back(i);
+		}
+	}
+	return leaves;
 }
 
 void TraceTreeItemOwner::clear_child_items()
@@ -108,6 +125,40 @@ pair<int, int> TraceTreeItemOwner::v_extents() const
 		extents = make_pair(0, 0);
 
 	return extents;
+}
+
+void TraceTreeItemOwner::save_trace_tree(QSettings &settings) const
+{
+	int i = 0;
+	for (const shared_ptr<TraceTreeItem> &child : trace_tree_child_items()) {
+		settings.beginGroup(QString::number(i++));
+			child->save_trace_tree(settings);
+		settings.endGroup();
+	}
+	settings.setValue("items", i);
+}
+
+void TraceTreeItemOwner::restore_trace_tree(QSettings &settings, map< QString, shared_ptr<TraceTreeItem> > &items)
+{
+	assert (settings.contains("items"));
+	for (int i = 0; i < settings.value("items").toInt(); i++) {
+		settings.beginGroup(QString::number(i));
+		if (settings.contains("items")) {
+			shared_ptr<TraceGroup> new_group = make_shared<TraceGroup>();
+			new_group->restore_trace_tree(settings, items);
+			if (!new_group->child_items().empty())
+				add_child_item(new_group);
+		} else if (settings.contains("trace")) {
+			QString name = settings.value("trace").toString();
+			if (items.count(name)) {
+				auto trace = items[name];
+				add_child_item(trace);
+				trace->restore_trace_tree(settings, items);
+			}
+		}
+		settings.endGroup();
+	}
+	restack_items();
 }
 
 void TraceTreeItemOwner::restack_items()
