@@ -110,11 +110,12 @@ LogicSignal::LogicSignal(pv::Session &session, shared_ptr<data::SignalBase> base
 	/* Populate this channel's trigger setting with whatever we
 	 * find in the current session trigger, if anything. */
 	trigger_match_ = nullptr;
-	if (shared_ptr<Trigger> trigger = session_.session()->trigger())
-		for (auto stage : trigger->stages())
-			for (auto match : stage->matches())
-				if (match->channel() == base_->channel())
-					trigger_match_ = match->type();
+	if (session_.session() != nullptr)
+		if (shared_ptr<Trigger> trigger = session_.session()->trigger())
+			for (auto stage : trigger->stages())
+				for (auto match : stage->matches())
+					if (match->channel() == base_->channel())
+						trigger_match_ = match->type();
 }
 
 std::map<QString, QVariant> LogicSignal::save_settings() const
