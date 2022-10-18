@@ -84,7 +84,7 @@ public:
 };
 
 Settings::Settings(DeviceManager &device_manager, QWidget *parent) :
-	QDialog(parent, nullptr),
+	QDialog(parent),
 	device_manager_(device_manager)
 {
 	resize(600, 400);
@@ -220,7 +220,7 @@ QWidget *Settings::get_general_settings_form(QWidget *parent) const
 	QComboBox *language_cb = new QComboBox();
 	Application* a = qobject_cast<Application*>(QApplication::instance());
 
-	QString current_language = settings.value(GlobalSettings::Key_General_Language).toString();
+	QString current_language = settings.value(GlobalSettings::Key_General_Language, "en").toString();
 	for (const QString& language : a->get_languages()) {
 		const QLocale locale = QLocale(language);
 		const QString desc = locale.languageToString(locale.language());
@@ -261,7 +261,7 @@ QWidget *Settings::get_general_settings_form(QWidget *parent) const
 	if (current_style.isEmpty())
 		style_cb->setCurrentIndex(0);
 	else
-		style_cb->setCurrentIndex(style_cb->findText(current_style, nullptr));
+		style_cb->setCurrentIndex(style_cb->findText(current_style));
 
 	connect(style_cb, SIGNAL(currentIndexChanged(int)),
 		this, SLOT(on_general_style_changed(int)));
