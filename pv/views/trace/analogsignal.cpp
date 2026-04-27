@@ -943,6 +943,12 @@ void AnalogSignal::on_setting_changed(const QString &key, const QVariant &value)
 	}
 }
 
+void AnalogSignal::on_samples_cleared()
+{
+	signal_min_ = 0;
+	signal_max_ = 0;
+}
+
 void AnalogSignal::on_min_max_changed(float min, float max)
 {
 	if (autoranging_)
