@@ -104,7 +104,9 @@ AnalogSignal::AnalogSignal(pv::Session &session, shared_ptr<data::SignalBase> ba
 	neg_vdivs_(1),
 	resolution_(0),
 	display_type_(DisplayAnalog),
-	autoranging_(true)
+	autoranging_(true),
+	signal_min_(0),
+	signal_max_(0)
 {
 	axis_pen_ = AxisPen;
 
