@@ -104,7 +104,9 @@ AnalogSignal::AnalogSignal(pv::Session &session, shared_ptr<data::SignalBase> ba
 	neg_vdivs_(1),
 	resolution_(0),
 	display_type_(DisplayAnalog),
-	autoranging_(true)
+	autoranging_(true),
+	signal_min_(0),
+	signal_max_(0)
 {
 	axis_pen_ = AxisPen;
 
@@ -939,6 +941,12 @@ void AnalogSignal::on_setting_changed(const QString &key, const QVariant &value)
 		if (owner_)
 			owner_->row_item_appearance_changed(false, true);
 	}
+}
+
+void AnalogSignal::on_samples_cleared()
+{
+	signal_min_ = 0;
+	signal_max_ = 0;
 }
 
 void AnalogSignal::on_min_max_changed(float min, float max)
