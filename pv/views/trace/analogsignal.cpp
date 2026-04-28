@@ -98,15 +98,15 @@ const int AnalogSignal::InfoTextMarginBottom = 5;
 
 AnalogSignal::AnalogSignal(pv::Session &session, shared_ptr<data::SignalBase> base) :
 	LogicSignal(session, base),
+	signal_min_(0),
+	signal_max_(0),
 	value_at_hover_pos_(std::numeric_limits<float>::quiet_NaN()),
 	scale_index_(4), // 20 per div
 	pos_vdivs_(1),
 	neg_vdivs_(1),
 	resolution_(0),
 	display_type_(DisplayAnalog),
-	autoranging_(true),
-	signal_min_(0),
-	signal_max_(0)
+	autoranging_(true)
 {
 	axis_pen_ = AxisPen;
 
