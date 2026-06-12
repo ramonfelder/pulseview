@@ -130,6 +130,7 @@ SignalBase::SignalBase(shared_ptr<sigrok::Channel> channel, ChannelType channel_
 	if (channel_) {
 		set_internal_name(QString::fromStdString(channel_->name()));
 		set_index(channel_->index());
+		set_name(QString::fromStdString(channel_->name()));
 	}
 
 	connect(&delayed_conversion_starter_, SIGNAL(timeout()),
@@ -209,7 +210,7 @@ SignalGroup* SignalBase::group() const
 
 QString SignalBase::name() const
 {
-	return (channel_) ? QString::fromStdString(channel_->name()) : name_;
+	return name_;
 }
 
 QString SignalBase::internal_name() const
@@ -235,9 +236,6 @@ QString SignalBase::display_name() const
 
 void SignalBase::set_name(QString name)
 {
-	if (channel_)
-		channel_->set_name(name.toUtf8().constData());
-
 	name_ = name;
 
 	name_changed(name);
